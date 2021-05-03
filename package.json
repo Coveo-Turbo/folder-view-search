@@ -1,0 +1,28 @@
+{
+    "name": "@coveops/folder-view-search",
+    "version": "1.0.0",
+    "description": "Creates a folder view based on hierchical facet structure",
+    "main": "dist/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "coveops build FolderViewSearch --template typescript",
+        "watch": "coveops build FolderViewSearch --template typescript --watch",
+        "serve": "coveops serve",
+        "precompile": "npm run build"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "Apache-2.0",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@coveops/localization-manager": "^1.0.1",
+        "@coveops/turbo-core": "^1.2.1",
+        "coveo-search-ui": "^2.10085.1"
+    },
+    "devDependencies": {
+        "@coveops/cli": "^0.15.0"
+    }
+}
