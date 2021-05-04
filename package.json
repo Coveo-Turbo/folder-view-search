@@ -1,6 +1,6 @@
 {
     "name": "@coveops/folder-view-search",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "Creates a folder view based on hierchical facet structure",
     "main": "dist/index.js",
     "scripts": {
@@ -20,7 +20,8 @@
     "dependencies": {
         "@coveops/localization-manager": "^1.0.1",
         "@coveops/turbo-core": "^1.2.1",
-        "coveo-search-ui": "^2.10085.1"
+        "coveo-search-ui": "^2.10085.1",
+        "svg-inline-loader": "^0.8.0"
     },
     "devDependencies": {
         "@coveops/cli": "^0.15.0"

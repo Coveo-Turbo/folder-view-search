@@ -38,8 +38,7 @@
 </head>
 <body>
     <div id="search" class="CoveoSearchInterface" data-enable-history="true">
-        <!-- <div class="CoveoFolding"></div> -->
-        <div class="CoveoAnalytics"></div>
+        <div class="CoveoAnalytics" data-search-hub="dtdam-prod-dam-coveo-integration"></div>
         <div class="coveo-tab-section">
           <a class="CoveoTab" data-id="All" data-caption="All Content"></a>
         </div>
@@ -48,9 +47,9 @@
         </div>
         <div class="coveo-main-section">
           <div class="coveo-facet-column">
-            <div class="CoveoDynamicFacet" data-title="Type" data-field="@objecttype" data-tab="All"></div>
+            <div class="CoveoCategoryFacet" data-tab="All" data-title="Folders" data-field="@dtdam_parentfolder_facet" 
+                data-enable-facet-search="false" data-is-multi-value-field="true" data-number-of-values="24" data-enable-settings="false"></div>
             <div class="CoveoDynamicFacet" data-title="FileType" data-field="@filetype" data-tab="All"></div>
-            <div class="CoveoDynamicFacet" data-title="Author" data-field="@author" data-tab="All"></div>
           </div>
           <div class="coveo-results-column">
             <div class="CoveoShareQuery"></div>
@@ -60,6 +59,8 @@
             </div>
             <div class="CoveoTriggers"></div>
             <div class="CoveoBreadcrumb"></div>
+            <!-- <div class="CoveoFolderView" data-facet-field="dtdam_parentfolder_facet" data-initial-level=1></div> -->
+            <div class="CoveoFolderNavigator" data-facet-field="@dtdam_parentfolder_facet"></div>
             <div class="CoveoDidYouMean"></div>
             <div class="coveo-results-header">
               <div class="coveo-summary-section">
@@ -72,11 +73,13 @@
               <div class="coveo-sort-section">
                 <span class="CoveoSort" data-sort-criteria="relevancy" data-caption="Relevance"></span>
                 <span class="CoveoSort" data-sort-criteria="date descending,date ascending" data-caption="Date"></span>
+                <div  class="CoveoSort" data-sort-criteria="@dtdam_item_level ascending" data-caption="itemLevel"></div> 
               </div>
             </div>
             <div class="CoveoHiddenQuery"></div>
             <div class="CoveoErrorReport" data-pop-up="false"></div>
-            <div class="CoveoResultList" data-layout="list" data-wait-animation="fade" data-auto-select-fields-to-include="true">
+            
+            <div class="CoveoResultList" data-layout="list" data-wait-animation="fade" data-auto-select-fields-to-include="false">
               <script id="Default" class="result-template" type="text/html" data-layout="list"><div class="coveo-result-frame">
         <div class="coveo-result-cell" style="vertical-align:top;text-align:center;width:32px;">
           <span class="CoveoIcon" data-small="true" data-with-label="false"></span>
@@ -100,20 +103,8 @@
           </div>
           <div class="coveo-result-row" style="margin-top:10px;">
             <div class="coveo-result-cell">
-              <span class="CoveoFieldValue" data-field="@author" data-text-caption="Author" style="margin-right:30px;"></span>
-              <span class="CoveoFieldValue" data-field="@source" data-text-caption="Source" style="margin-right:30px;"></span>
-              <span class="CoveoFieldValue" data-field="@language" data-text-caption="Language" style="margin-right:30px;"></span>
-              <span class="CoveoFieldValue" data-field="@filetype" data-text-caption="File Type" style="margin-right:30px;"></span>
-            </div>
-          </div>
-          <div class="coveo-result-row" style="margin-top:10px;">
-            <div class="coveo-result-cell">
-              <div class="CoveoPrintableUri"></div>
-            </div>
-          </div>
-          <div class="coveo-result-row">
-            <div class="coveo-result-cell">
-              <div class="CoveoMissingTerms"></div>
+              <span class="CoveoFieldValue" data-field="@dtdam_item_level" data-text-caption="dtdam_item_level" style="margin-right:30px;"></span>
+              <span class="CoveoFieldValue" data-field="@dtdam_item_type" data-text-caption="dtdam_item_type" style="margin-right:30px;"></span>
             </div>
           </div>
         </div>

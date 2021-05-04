@@ -1,0 +1,47 @@
+.CoveoToggleFolderView {
+    .container{
+        display: flex;
+        width: 25%;
+        border: #3b9835 2px solid;
+        border-radius: 7px;
+        cursor: pointer;
+
+        &.usingFolderView{
+            background-color: #3b9835;
+        }
+        
+        .toggleSwitchCaption{
+            margin: 5px;
+        }
+
+        .folderIcon{
+            width: 30px;
+            margin: 5px;
+        }
+    }
+    
+}
+
+.CoveoFolderNavigator {
+    .container{
+        display: flex;
+        width: 50%;
+        border: #3b9835 2px solid;
+        border-radius: 7px;
+        cursor: pointer;
+
+        &.usingFolderView{
+            background-color: #3b9835;
+        }
+        
+        .toggleSwitchCaption{
+            margin: 5px;
+        }
+
+        .folderIcon{
+            width: 30px;
+            margin: 5px;
+        }
+    }
+    
+}
