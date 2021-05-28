@@ -1,120 +1,538 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://static.cloud.coveo.com/searchui/v2.9659/js/CoveoJsSearch.Lazy.js"></script>
-    <script src="https://static.cloud.coveo.com/searchui/v2.9659/js/cultures/en.js"></script>
-    <script src="https://static.cloud.coveo.com/searchui/v2.9659/js/templates/templatesNew.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://static.cloud.coveo.com/searchui/v2.9659/js/CoveoJsSearch.Lazy.js"></script>
+  <script src="https://static.cloud.coveo.com/searchui/v2.9659/js/cultures/en.js"></script>
+  <script src="https://static.cloud.coveo.com/searchui/v2.9659/js/templates/templatesNew.js"></script>
 
-    <script src="config.js"></script>
-    <script src="component.js"></script>
-    <!-- <script src="components/<name>.js"></script> -->
+  <script src="config.js"></script>
+  <script src="component.js"></script>
+  <!-- <script src="components/<name>.js"></script> -->
 
-    <script src="init.js"></script>
+  <script src="init.js"></script>
 
-    <link rel="stylesheet" href="https://static.cloud.coveo.com/searchui/v2.9659/css/CoveoFullSearchNewDesign.css" />
-    <link rel="stylesheet" href="component.css" />
+  <link rel="stylesheet" href="https://static.cloud.coveo.com/searchui/v2.9659/css/CoveoFullSearchNewDesign.css" />
+  <link rel="stylesheet" href="component.css" />
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Coveo.SearchEndpoint.endpoints['default'].options.queryStringArguments.viewAllContent = 'true';
-            Coveo.init(document.getElementById('search'), {
-                Analytics: {
-                    searchHub: demoConfig.searchHub,
-                }
-            });
-    
-            const standaloneSearchBoxRoot = document.querySelector('.CoveoSearchInterface');
-        
-            Coveo.initSearchbox(standaloneSearchBoxRoot, demoConfig.searchUrl, {
-                Analytics: {
-                    searchHub: demoConfig.searchHub,
-                },
-            });
-        })
-    </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Coveo.SearchEndpoint.endpoints['default'].options.queryStringArguments.viewAllContent = 'true';
+      Coveo.init(document.getElementById('search'), {
+        Analytics: {
+          searchHub: demoConfig.searchHub,
+        }
+      });
+
+      const standaloneSearchBoxRoot = document.querySelector('.CoveoSearchInterface');
+
+      Coveo.initSearchbox(standaloneSearchBoxRoot, demoConfig.searchUrl, {
+        Analytics: {
+          searchHub: demoConfig.searchHub,
+        },
+      });
+    })
+  </script>
+
+  <style>
+    #search.CoveoSearchInterface .coveo-search-section {
+      margin: 15px auto 15px;
+    }
+
+    #search.CoveoSearchInterface .coveo-main-section {
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="search" class="CoveoSearchInterface" data-enable-history="true">
-        <div class="CoveoAnalytics" data-search-hub="dtdam-prod-dam-coveo-integration"></div>
-        <div class="coveo-tab-section">
-          <a class="CoveoTab" data-id="All" data-caption="All Content"></a>
-        </div>
-        <div class="coveo-search-section">
-          <div class="CoveoSearchbox" data-enable-omnibox="true"></div>
-        </div>
-        <div class="coveo-main-section">
-          <div class="coveo-facet-column">
-            <div class="CoveoCategoryFacet" data-tab="All" data-title="Folders" data-field="@dtdam_parentfolder_facet" 
-                data-enable-facet-search="false" data-is-multi-value-field="true" data-number-of-values="24" data-enable-settings="false"></div>
-            <div class="CoveoDynamicFacet" data-title="FileType" data-field="@filetype" data-tab="All"></div>
-          </div>
-          <div class="coveo-results-column">
-            <div class="CoveoShareQuery"></div>
-            <div class="CoveoPreferencesPanel">
-              <div class="CoveoResultsPreferences"></div>
-              <div class="CoveoResultsFiltersPreferences"></div>
-            </div>
-            <div class="CoveoTriggers"></div>
-            <div class="CoveoBreadcrumb"></div>
-            <!-- <div class="CoveoFolderView" data-facet-field="dtdam_parentfolder_facet" data-initial-level=1></div> -->
-            <div class="CoveoFolderNavigator" data-facet-field="@dtdam_parentfolder_facet"></div>
-            <div class="CoveoDidYouMean"></div>
-            <div class="coveo-results-header">
-              <div class="coveo-summary-section">
-                <span class="CoveoQuerySummary"></span>
-                <span class="CoveoQueryDuration"></span>
-              </div>
-              <div class="coveo-result-layout-section">
-                <span class="CoveoResultLayout"></span>
-              </div>
-              <div class="coveo-sort-section">
-                <span class="CoveoSort" data-sort-criteria="relevancy" data-caption="Relevance"></span>
-                <span class="CoveoSort" data-sort-criteria="date descending,date ascending" data-caption="Date"></span>
-                <div  class="CoveoSort" data-sort-criteria="@dtdam_item_level ascending" data-caption="itemLevel"></div> 
-              </div>
-            </div>
-            <div class="CoveoHiddenQuery"></div>
-            <div class="CoveoErrorReport" data-pop-up="false"></div>
-            
-            <div class="CoveoResultList" data-layout="list" data-wait-animation="fade" data-auto-select-fields-to-include="false">
-              <script id="Default" class="result-template" type="text/html" data-layout="list"><div class="coveo-result-frame">
-        <div class="coveo-result-cell" style="vertical-align:top;text-align:center;width:32px;">
-          <span class="CoveoIcon" data-small="true" data-with-label="false"></span>
-          <div class="CoveoQuickview"></div>
-        </div>
-        <div class="coveo-result-cell" style="vertical-align: top;padding-left: 16px;">
-          <div class="coveo-result-row" style="margin-top:0;">
-            <div class="coveo-result-cell" style="vertical-align:top;font-size:16px;" role="heading" aria-level="2">
-              <a class="CoveoResultLink"></a>
-            </div>
-            <div class="coveo-result-cell" style="width:120px;text-align:right;font-size:12px">
-              <div class="coveo-result-row">
-                <span class="CoveoFieldValue" data-field="@date" data-helper="date"></span>
-              </div>
-            </div>
-          </div>
-          <div class="coveo-result-row" style="margin-top:10px;">
-            <div class="coveo-result-cell">
-              <span class="CoveoExcerpt"></span>
-            </div>
-          </div>
-          <div class="coveo-result-row" style="margin-top:10px;">
-            <div class="coveo-result-cell">
-              <span class="CoveoFieldValue" data-field="@dtdam_item_level" data-text-caption="dtdam_item_level" style="margin-right:30px;"></span>
-              <span class="CoveoFieldValue" data-field="@dtdam_item_type" data-text-caption="dtdam_item_type" style="margin-right:30px;"></span>
-            </div>
-          </div>
-        </div>
-      </div></script>
-            </div>
-            <div class="CoveoPager"></div>
-            <div class="CoveoLogo"></div>
-            <div class="CoveoResultsPerPage"></div>
-          </div>
-        </div>
+  <div id="search" class="CoveoSearchInterface" data-enable-history="true">
+    <div class="CoveoAnalytics" data-search-hub="dtdam-prod-dam-coveo-integration"></div>
+    <div class="CoveoFolderNavigator" data-facet-field="@dtdam_parentfolder_facet"></div>
+
+    <div class="coveo-tab-section">
+      <a class="CoveoTab" data-id="All" data-caption="All"></a>
+      <a class="CoveoTab" data-id="Icons" data-caption="Icons"
+        data-expression="@dtdam_dc_type=asset-type|image|supplemental|icon"></a>
+      <a class="CoveoTab" data-id="LifeStyle" data-caption="Lifestyle"
+        data-expression="@dtdam_dc_type=asset-type|image|lifestyle"></a>
+      <a class="CoveoTab" data-id="Products" data-caption="Products"
+        data-expression="@dtdam_dc_type=asset-type|image|product"></a>
+      <a class="CoveoTab dibs-tab" data-tooltip="Dynamic Image Builder" data-position="left center" data-id="DIBS"
+        data-caption=""
+        data-expression="@dtdam_dell_screencoordinates AND @dtdam_dam_scene7publishurl AND @dtdam_dam_scene7cropparameters">
+        <img class="dibs-icon" alt="DIBS"
+          src="/content/dam/brand_elements/icons/s-t/toolbox/64_pixel/toolbox-64-dellblue.png" />
+      </a>
     </div>
+
+    <div class="coveo-search-section">
+      <div class="CoveoSearchbox" data-enable-omnibox="true"></div>
+    </div>
+    <div class="coveo-main-section">
+      <div class="coveo-facet-column">
+        <!-- <div class="CoveoCategoryFacet" data-tab="All" data-title="Folders" data-field="@dtdam_parentfolder_facet"
+          data-enable-facet-search="false" data-is-multi-value-field="true" data-number-of-values="24"
+          data-enable-settings="false"></div> -->
+
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Folders" data-field="@dtdam_parentfolder_facet"
+          data-enable-facet-search="false" data-is-multi-value-field="true" data-number-of-values="18"
+          data-enable-collapse='true' data-collapsed-by-default='true' data-sort-criteria='alphanumeric'
+          data-tab="All,Icons,LifeStyle,Products" id="dtdam_parentfolder_facet">
+        </div>
+        <!-- Asset Creator Organization -->
+        <div class="CoveoDynamicFacet" data-title="Asset Creator Organization" data-field="@dtdam_dell_srcorganization"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric'
+          data-use-leading-wildcard-in-facet-search='true'
+          data-value-caption='{&quot;agefotostock&quot;: &quot;Age fotostock&quot;}'
+          data-tab="All,Icons,LifeStyle,Products" data-number-of-values="6">
+        </div>
+        <!-- Expiration Date -->
+
+        <div class="CoveoRangePicker" data-title="Asset Expiration Date"
+          data-field-from="@dtdam_prism_expirationdate_date" data-field-to="@dtdam_prism_expirationdate_date"
+          data-enable-collapse="true" data-enable-radio-button="false" data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_prism_expirationdate_date_facet">
+        </div>
+
+        <!--  Asset Type : dam_dc_type -->
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Asset Type" data-field="@dtdam_dc_type"
+          data-base-path="asset-type" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dc_type">
+        </div>
+
+
+        <!--  Business UNIT : dtdam_dell_businessUnit -->
+
+        <div class="CoveoDynamicFacet" data-title="Business Unit" data-field="@dtdam_dell_businessUnit"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <!--  Business UNIT : dtdam_dell_buyersjourney -->
+
+        <div class="CoveoDynamicFacet" data-title="Buyers Journey" data-field="@dtdam_dell_buyersjourney"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Campaign" data-field="@dtdam_dell_campaign"
+          data-base-path="campaign" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_campaign">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="File Format" data-field="@dtdam_dell_extension"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-number-of-values="6"
+          data-tab="All,Icons,LifeStyle,Products" id="dtdam_dell_extension">
+        </div>
+
+        <!-- Industry -->
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Industry" data-field="@dtdam_dell_industry"
+          data-base-path="industry" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_industry">
+        </div>
+
+        <!-- Ingested Date -->
+
+        <div class="CoveoRangePicker" data-title="Ingest Date" data-field-from="@dtdam_dell_ingesteddate_date"
+          data-field-to="@dtdam_dell_ingesteddate_date" data-enable-collapse="true" data-enable-radio-button="false"
+          data-tab="All,Icons,LifeStyle,Products" id="dtdam_dell_ingesteddate_date_facet">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Language" data-field="@dtdam_dc_language"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Marcom Asset Category"
+          data-field="@dtdam_dell_marcomassetcategory" data-base-path="marcom-asset-category"
+          data-enable-collapse='true' data-collapsed-by-default='true' data-number-of-values="6"
+          data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products" id="dtdam_dell_marcomassetcategory">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Notebook Openness" data-field="@dtdam_dell_notebookopenness"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Partner Tier" data-field="@dtdam_dell_partnertier"
+          data-base-path="partner-tier" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_partnertier">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Partner Type" data-field="@dtdam_dell_partnertype"
+          data-base-path="partner-type" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_partnertype">
+        </div>
+
+
+        <div class="CoveoDynamicFacet" data-title="Persona" data-field="@dtdam_dell_persona"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Color" data-field="@dtdam_dell_productcolor"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+
+        <!-- Product Launch Date-->
+
+        <div class="CoveoRangePicker" data-title="Product Launch Date"
+          data-field-from="@dtdam_dell_productlaunchdate_date" data-field-to="@dtdam_dell_productlaunchdate_date"
+          data-enable-collapse="true" data-enable-radio-button="false" data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_productlaunchdate_date_facet">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Model Number" data-field="@dtdam_dell_modelnumber"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Line of Business" data-field="@dtdam_dell_productline"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Manufacturer" data-field="@dtdam_dell_productmanufacturer"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Orientation" data-field="@dtdam_dell_productorientation"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Product Series" data-field="@dtdam_dell_productseries"
+          data-base-path="product-series" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_productseries">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Shot Style" data-field="@dtdam_dell_productshotstyle"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Type" data-field="@dtdam_dell_lineofbusiness"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Ready For Social Posting"
+          data-field="@dtdam_dell_readyforsocialposting" data-collapsed-by-default='true'
+          data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products" data-number-of-values="6"
+          data-value-caption='{&quot;True&quot;: &quot;Yes&quot;,
+              &quot;False&quot;: &quot;No&quot;,
+              &quot;true&quot;: &quot;Yes&quot;}'>
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Ready For Zift" data-field="@dtdam_dell_readyforzift"
+          data-collapsed-by-default='true' data-number-of-values="6" data-tab="All,Icons,LifeStyle,Products"
+          data-sort-criteria='alphanumeric' data-value-caption='{&quot;True&quot;: &quot;Yes&quot;,
+              &quot;False&quot;: &quot;No&quot;,
+              &quot;true&quot;: &quot;Yes&quot;}'>
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Regional Coverage" data-field="@dtdam_dc_coverage"
+          data-base-path="regional-coverage" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dc_coverage">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Route to Market" data-field="@dtdam_dell_routetomarket"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+        <div class="CoveoDynamicFacet" data-title="Segment" data-field="@dtdam_dell_segment"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Social Network" data-field="@dtdam_dell_socialnetwork"
+          data-base-path="social-network" data-enable-collapse='true' data-collapsed-by-default='true'
+          data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          id="dtdam_dell_socialnetwork">
+        </div>
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Tags" data-field="@dtdam_cq_tags"
+          data-enable-collapse='true' data-collapsed-by-default='true' data-number-of-values="8"
+          data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products" id="dtdam_cq_tags">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Talent Ethnicity" data-field="@dtdam_dell_talentethnicity"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicHierarchicalFacet" data-title="Talent Genders" data-field="@dtdam_dell_talentgenders"
+          data-enable-collapse='true' data-collapsed-by-default='true' data-number-of-values="8"
+          data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products" id="dtdam_dell_talentgenders">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Usage Rights" data-field="@dtdam_dell_usagerights"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="All,Icons,LifeStyle,Products"
+          data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacetRange" data-title="Video Length in Mins" data-field="@dtdam_dc_extentmin"
+          data-tab="All,Icons,LifeStyle,Products" data-ranges="[{ &quot;start&quot; : 0 , &quot;end&quot; : 1 }, 
+              { &quot;start&quot; : 1 , &quot;end&quot; : 2 },
+              { &quot;start&quot; : 2 , &quot;end&quot; : 3 },
+              { &quot;start&quot; : 3 , &quot;end&quot; : 4 },
+              { &quot;start&quot; : 4 , &quot;end&quot; : 5 },
+              { &quot;start&quot; : 5 , &quot;end&quot; : 100 }]"></div>
+
+        <!-- DIBS Filters-->
+
+        <div class="CoveoDynamicFacet" data-title="Product Type" data-field="@dtdam_dell_lineofbusiness"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="DIBS" data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Line of Business" data-field="@dtdam_dell_productline"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="DIBS" data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Model Number" data-field="@dtdam_dell_modelnumber"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="DIBS" data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Orientation" data-field="@dtdam_dell_productorientation"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="DIBS" data-number-of-values="6">
+        </div>
+
+        <div class="CoveoDynamicFacet" data-title="Product Color" data-field="@dtdam_dell_productcolor"
+          data-collapsed-by-default='true' data-sort-criteria='alphanumeric' data-tab="DIBS" data-number-of-values="6">
+        </div>
+        <div class="CoveoDynamicFacet" data-title="Asset Status" data-field="@dtdam_dell_assetstatus"
+          data-collapsed-by-default='true' data-number-of-values="6" data-sort-criteria='alphanumeric' data-tab="DIBS"
+          id="dtdam_dell_assetstatus">
+        </div>
+
+
+      </div>
+      <div class="coveo-results-column">
+        <div class="CoveoShareQuery"></div>
+        <div class="CoveoPreferencesPanel">
+          <div class="CoveoResultsPreferences"></div>
+          <div class="CoveoResultsFiltersPreferences"></div>
+        </div>
+        <div class="CoveoTriggers"></div>
+        <div class="CoveoBreadcrumb"></div>
+        <div class="CoveoDidYouMean"></div>
+        <div class="coveo-results-header">
+          <div class="coveo-summary-section">
+            <span class="CoveoQuerySummary"></span>
+            <span class="CoveoQueryDuration"></span>
+          </div>
+          <div class="coveo-result-layout-section">
+            <span class="CoveoResultLayout"></span>
+          </div>
+          <div class="coveo-sort-section">
+            <span class="CoveoSort" data-sort-criteria="relevancy" data-caption="Relevance"></span>
+            <div class="CoveoSort" data-sort-criteria="@dtdam_item_level ascending" data-caption="itemLevel"></div>
+          </div>
+        </div>
+        <div class="CoveoHiddenQuery"></div>
+        <div class="CoveoErrorReport" data-pop-up="false"></div>
+
+        <div class="CoveoResultList" data-layout="card" data-wait-animation="fade"
+          data-auto-select-fields-to-include="true" data-enable-infinite-scroll='true'>
+          <div class="coveo-show-if-no-results">
+            <h1 class="ui center aligned header">Your search did not match any assets.</h1>
+            <span class="CoveoQuerySummary" data-enable-no-results-found-message="false">
+            </span>
+          </div>
+          <script type="text/underscore" class="result-template">
+            <div class="ui cards">
+                <div class="ui card cmp-card" style="padding: 0">
+                  <% if(raw.dtdam_dell_assetstatus == 'Pre-launch') { %>
+                    <div class="asset-status prelaunch">Pre-launch</div>
+                  <% } %>
+                  <div class="coveo-result-row" data-image-field="@ytthumbnailurl">
+                    <div class="CoveoDellAssetshareThumbnail" data-image-pathCard="<%=raw.clickableuri%>"
+                      data-title-card="<%=raw.dtdam_dc_title%>"></div>
+                  </div>
+                  <div class="coveo-result-row content">
+                    <div class="coveo-result-cell">
+                      <h3 class="filename_tooltip_card">
+                        <a class="CoveoResultLink" title="<%= raw.sysclickableuri%>" href="<%= raw.detailsPath%>" target = "_blank"><%= raw.contentTitleText%></a>
+                        <% if(raw.sysclickableuri != undefined && raw.sysclickableuri[0].length > 56) { %>
+                          <span class="filename_tooltiptext_card">
+                            <div><%= raw.sysclickableuri[0]%></div>
+                          </span>
+                        <% } %>
+                      </h3>
+                      <div class="meta">
+                        <div class="property dc-title"><%=raw.dtdam_dc_title%></div>
+                        <div class="property tooltip_card <%=raw.usagerights%>">
+                          <a href="<%=raw.detailsPath%>" target = "_blank">
+                            <%=raw.dtdam_dell_usagerights%>
+                          </a>
+                   <% if(raw.dtdam_dell_usagerightsnotes !="" && raw.dtdam_dell_usagerightsnotes != undefined && raw.dtdam_dell_usagerightsnotes != null ) { %>
+                          <div class="tooltiptext_card">
+                              <b>Usage Rights Notes</b><hr>
+                              <p class="usage_note_tooltip_content"><%=raw.dtdam_dell_usagerightsnotes%></p>
+                          </div>
+                   <%}%>
+                        </div>
+                        <div class="property">
+                            <span class="CoveoFieldValue value small" data-field="@dtdam_dam_size"></span>
+                            <span class="CoveoFieldValue value big right" data-field="@dtdam_dell_ingesteddate_date"
+                                data-helper="emailDateTime" data-helper-options-always-include-time="true"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="extra content">
+                    <div class="ui divider"></div>
+                    <ul class="cmp_card__action-buttons">
+                      <li class="custom-button">
+                        <input type="hidden" name="filename" value='<%=raw.sysclickableuri%>.assetdownload.zip'
+                          class="asset-download-filename">
+                        <input type="hidden" name="paths" value='<%=raw.clickableuri%>/jcr:content/renditions/original'
+                          class="asset-download-path">
+                        <span class="CoveoDownload"  data-asset-imageDownload="<%=raw.clickableuri%>"></span>
+                        <button class="ui link button card-download-button-spinner disabled hidden">
+                          <div class="ui active loader"></div>
+                        </button>
+                      </li>
+                      <li class="custom-share-button CoveoShare" data-asset-shareimage="<%=raw.clickableuri%>">
+                        <input type="hidden" name="filename" value='<%=raw.sysclickableuri%>.assetdownload.zip'
+                          class="asset-download-filename">
+                        <input type="hidden" name="paths" value='<%=raw.clickableuri%>/jcr:content/renditions/original'
+                          class="asset-download-path">
+                      </li>
+                      <li class="custom-button">
+                        <button class="ui link button" data-asset-share-id="add-to-cart"
+                          data-asset-share-asset="<%=raw.clickableuri%>" aria-label="Add to cart">
+                          <span class="cmp_card__action-buttons-popup">Add to cart</span>
+                        </button>
+                        <button class="ui link button hidden" data-asset-share-id="remove-from-cart"
+                          data-asset-share-asset="<%=raw.clickableuri%>" aria-label="Remove from cart" style="display: none;">
+                          <span class="cmp_card__action-buttons-popup">Remove from cart</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </script>
+        </div>
+
+        <div class="CoveoResultList" data-layout="list" data-wait-animation="fade"
+          data-auto-select-fields-to-include="true" data-enable-infinite-scroll='true'>
+          <div class="coveo-show-if-no-results">
+            <br />
+            <h1 class="ui center aligned header">Your search did not match any assets.</h1>
+            <span class="CoveoQuerySummary" data-enable-no-results-found-message="false">
+            </span>
+          </div>
+          <div id="fixedhead">
+            <ul>
+              <li class="center aligned" style="width: 120px;">Preview</li>
+              <li class="center aligned" style="width: 189px;">File Name</li>
+              <li class="center aligned" style="width: 94px;">Asset Size</li>
+              <li class="center aligned" style="width: 208px;">Usage Rights</li>
+              <!--  <li class="center aligned" style="width: 196px;"></li>-->
+            </ul>
+          </div>
+          <script type="text/underscore" class="result-template">
+            <table class="ui center aligned selectable table list-view-table unstackable">
+                <tbody>
+                  <tr>
+                    <td class="image cardHeaderPreview asset-image-list">
+                      <% if(raw.dtdam_dell_assetstatus == 'Pre-launch') { %>
+                        <div class="asset-status prelaunch">Pre-launch</div>
+                      <% } %>
+                      <div class="CoveoDellAssetshareListThumbnail" data-image-path="<%=raw.clickableuri%>" data-title-list="<%=raw.dtdam_dc_title%>"></div>
+                    </td>
+                    <td class="filename_tooltip_list">
+                      <a class="CoveoResultLink" href="<%=raw.detailsPath%>">
+                        <%= raw.contentTitleText%>
+                      </a>
+                    </td>
+                    <td class="cardHeaderFileSize">
+                      <span class="CoveoFieldValue" data-field="@dtdam_dam_size"></span>
+                    </td>
+                    <td class="cardHeaderUsageRights">
+                      <span class="tooltip_list">
+                        <a class="value <%=raw.usagerights%>" href="<%=raw.detailsPath%>" target="_blank">
+                          <%=raw.dtdam_dell_usagerights%>
+                        </a>
+                 <% if(raw.dtdam_dell_usagerightsnotes !="" && raw.dtdam_dell_usagerightsnotes != undefined && raw.dtdam_dell_usagerightsnotes != null ) { %>
+                        <span class="tooltiptext_list">
+                            <b>Usage Rights Notes</b><hr>
+                            <p class="usage_note_tooltip_content"><%=raw.dtdam_dell_usagerightsnotes%></p>
+                        </span>
+                 <% } %>
+                      </span>
+                    </td>
+                    <td class="cardHeaderOption">
+                      <span class="CoveoActionButton  cardHeaderOption" data-asset-share-asset="<%=raw.clickableuri%>">
+                        <input type="hidden" name="filename" value='<%=raw.sysclickableuri%>.assetdownload.zip'
+                          class="asset-download-filename">
+                        <input type="hidden" name="paths" value='<%=raw.clickableuri%>/jcr:content/renditions/original'
+                          class="asset-download-path">
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </script>
+        </div>
+
+        <div class="CoveoResultList dibs" data-layout="table" data-wait-animation="fade"
+          data-auto-select-fields-to-include="true">
+          <script id="text/underscore" class="result-template" type="text/html" data-role="table-header">
+            <th style="width:19%;">Product</th>
+            <th style="display: none">S7URL</th>
+            <th style="text-align: center">Image</th>
+            <th style="width:70px;"></th>
+          </script>
+          <script type="text/underscore" class="result-template">
+            <td style="white-space: normal; text-overflow: inherit;">
+                  <%=raw.fileName%>
+                  <% if(raw.dtdam_dell_assetstatus == 'Pre-launch') { %>
+                    <span class="banner-text">Pre-Launch</span>
+                  <% } %>
+                </td>
+                <td style="display: none;">
+                 <%=raw.dtdam_dam_scene7publishurl%>
+                </td>
+                <td style="overflow-x: auto; text-align:center">
+                  <img src="<%=raw.dtdam_dam_scene7publishurl%>">
+                </td>
+                <td>
+                    <button title="Download Image" onClick = "downloadResource('<%=raw.dtdam_dam_scene7publishurl%>','<%=raw.dtdam_dc_title%>');" class="circular primary ui icon button right floated download-button">
+                      <i class="icon download"></i>
+                    </button>
+                </td>
+            </script>
+        </div>
+
+
+
+        <div class="CoveoPager"></div>
+        <div class="CoveoLogo"></div>
+        <div class="CoveoResultsPerPage"></div>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>
