@@ -1,9 +1,24 @@
-import { Component, IComponentBindings, ComponentOptions, $$, FacetType, FacetSortCriteria } from 'coveo-search-ui';
+import {
+  Component,
+  IComponentBindings,
+  ComponentOptions,
+  $$,
+  DynamicHierarchicalFacet,
+  IQuerySuccessEventArgs,
+  QueryStateModel,
+  SearchEndpoint,
+  QueryEvents,
+  IDoneBuildingQueryEventArgs,
+  IBuildingQueryEventArgs,
+  Debug
+} from 'coveo-search-ui';
+
 import { lazyComponent } from '@coveops/turbo-core';
 import { DefaultResultTemplate } from './DefaultResultTemplate';
 
 export interface IFolderNavigatorOptions {
   facetField: string;
+  itemLevelField: string;
 }
 
 declare const require: (svgPath: string) => string;
@@ -15,27 +30,97 @@ export class FolderNavigator extends Component {
   static ID = 'FolderNavigator';
   static options: IFolderNavigatorOptions = {
     facetField: ComponentOptions.buildStringOption(),
+    itemLevelField: ComponentOptions.buildStringOption(),
   };
 
-  private cleanedField: string;
+  private cleanedFacetField: string;
+  private cleaneItemLevelField: string;
+
   public usingFolderView: boolean;
   public currentFolderLevel: number;
   public currentFolderPath: string[];
+  public generatedHierchichalFacet: DynamicHierarchicalFacet;
 
   constructor(public element: HTMLElement, public options: IFolderNavigatorOptions, public bindings: IComponentBindings) {
     super(element, FolderNavigator.ID, bindings);
     this.options = ComponentOptions.initComponentOptions(element, FolderNavigator, options);
 
-    this.cleanedField = this.options.facetField.replace('@', '');
+    this.cleanedFacetField = this.options.facetField.replace('@', '');
+    this.cleaneItemLevelField = this.options.facetField.replace('@', '');
     this.usingFolderView = false;
 
-    this.currentFolderLevel = 1;
-    this.currentFolderPath = [];
+    // this.generatedHierchichalFacet = new DynamicHierarchicalFacet("")
 
-    this.bind.onRootElement(Coveo.QueryEvents.buildingQuery, this.handleBuildingQuery);
-    this.bind.onRootElement(Coveo.QueryEvents.deferredQuerySuccess, this.handleDeferredQuerySuccess);
+    this.bind.onRootElement(QueryEvents.buildingQuery, this.handleBuildingQuery);
+    this.bind.onRootElement(QueryEvents.doneBuildingQuery, this.handleDoneBuildingQuery);
+    // this.bind.onRootElement(QueryEvents.deferredQuerySuccess, this.handleDeferredQuerySuccess);
+    this.bind.onRootElement(QueryEvents.preprocessResults, this.handleDeferredQuerySuccess);
 
     this.buildFolderViewIndicator();
+
+  }
+
+  public handleDoneBuildingQuery(args: IDoneBuildingQueryEventArgs) {
+    //Only if using the folder view, we need to have the items sorted by item level to make sure the items from the current level are in the first result set
+    if (this.usingFolderView) {
+      args.queryBuilder.sortCriteria = this.options.itemLevelField + " ascending";
+    }
+  }
+  public handleBuildingQuery(args: IBuildingQueryEventArgs) {
+    let state = Coveo.state(this.root);
+
+    this.currentFolderLevel = 1;
+    if (state.attributes["f:" + this.options.facetField]){
+      this.currentFolderLevel += state.attributes["f:" + this.options.facetField].length
+    }
+
+    if (this.isStateVanilla(state)) {
+      this.usingFolderView = true;
+      args.queryBuilder.addContextValue('vanillaState', true);
+      //this.createFolderStructure();
+      //this.generateFolders();
+
+      //this.navigateInsideFolder(this.currentFolderPath);
+      // make sure we show folder view
+    } else {
+      this.usingFolderView = false;
+      args.queryBuilder.addContextValue('vanillaState', false);
+
+      // remove folder view items
+    }
+
+    // this.toggleView();
+    this.updateFolderViewIndicator();
+  }
+
+  public handleDeferredQuerySuccess(args: IQuerySuccessEventArgs) {
+    if (this.usingFolderView) {
+      this.createFolderStructure();
+      this.createFolders(args);
+      
+      debugger
+      args.results.results = _.filter(args.results.results, (item) => {
+        return item.raw.dtdam_item_level == this.currentFolderLevel;
+      });
+      
+
+
+    } else {
+      this.removeFolderStructure();
+    }
+
+    // let folderContainer = this.element.querySelector('.folderContainer') as HTMLElement;
+    // folderContainer.innerText = "";
+    // let folderResultsContainer = this.element.querySelector('.folderResultsContainer') as HTMLElement;
+    // folderResultsContainer.innerText = "";
+
+    // let folders = _.find(args.results.facets, (item) => {
+    //   return item.field == this.cleanedFacetField
+    // }).values;
+
+    // _.each(folders, (item) => {
+    //   this.generateFolder(item);
+    // });
 
   }
 
@@ -63,7 +148,7 @@ export class FolderNavigator extends Component {
     let CoveoResultList = this.root.querySelector('.CoveoResultList') as HTMLElement;
     let CoveoSummary = this.root.querySelector('.coveo-summary-section') as HTMLElement;
     let folderNavigatorContainer = this.root.querySelector('.folderNavigatorContainer') as HTMLElement;
-debugger
+
     if (this.usingFolderView) {
       CoveoResultList.hidden = true;
       CoveoSummary.hidden = true;
@@ -71,7 +156,8 @@ debugger
     } else {
       CoveoResultList.hidden = false;
       CoveoSummary.hidden = false;
-      folderNavigatorContainer.remove();
+      folderNavigatorContainer.hidden = true;
+      //folderNavigatorContainer.remove();
     }
   }
 
@@ -83,51 +169,20 @@ debugger
     // const folderResultsContainer = $$('div', { className: 'folderResultsContainer' });
     // this.element.append(folderResultsContainer.el)
 
+    //add a logic to insert the structure in the right list (card, list or table)
     this.root.querySelector('.CoveoResultList').parentElement.insertBefore(folderContainer.el, this.root.querySelector('.CoveoResultList'));
   }
 
-  public handleBuildingQuery(args: Coveo.IQuerySuccessEventArgs) {
-    let state = Coveo.state(this.root);
+  private removeFolderStructure() {
+    const folderContainer = this.root.querySelector('.folderNavigatorContainer');
 
-    if (this.isStateVanilla(state)) {
-      this.usingFolderView = true;
-      args.queryBuilder.addContextValue('vanillaState', true);
-
-      this.createFolderStructure();
-      this.generateFolders();
-
-
-      //this.navigateInsideFolder(this.currentFolderPath);
-      // make sure we show folder view
-    } else {
-      this.usingFolderView = false;
-      args.queryBuilder.addContextValue('vanillaState', false);
-      this.updateFolderViewIndicator();
-      
-      // remove folder view items
+    if (folderContainer) {
+      folderContainer.remove();
     }
-
-    this.toggleView();
-    this.updateFolderViewIndicator();
   }
 
-  public handleDeferredQuerySuccess(args: Coveo.IQuerySuccessEventArgs) {
-    // let folderContainer = this.element.querySelector('.folderContainer') as HTMLElement;
-    // folderContainer.innerText = "";
-    // let folderResultsContainer = this.element.querySelector('.folderResultsContainer') as HTMLElement;
-    // folderResultsContainer.innerText = "";
 
-    // let folders = _.find(args.results.facets, (item) => {
-    //   return item.field == this.cleanedField
-    // }).values;
-
-    // _.each(folders, (item) => {
-    //   this.generateFolder(item);
-    // });
-
-  }
-
-  private isStateVanilla(state: Coveo.QueryStateModel) {
+  private isStateVanilla(state: QueryStateModel) {
     let isVanilla = true;
 
     // If there's a query, don't show folderview
@@ -139,7 +194,7 @@ debugger
     _.each(
       _.filter(
         Object.keys(state.attributes), (item) => {
-          return (item.toString().substr(0, 2) == "f:")
+          return (item.toString().substr(0, 2) == "f:" && item.toString() != "f:" + this.options.facetField)
         }
       ), (facet) => {
         if (state.attributes[facet].length > 0) {
@@ -151,7 +206,33 @@ debugger
     return isVanilla;
   }
 
-  public generateFolder(x : any){
+  public createFolders(args: IQuerySuccessEventArgs) {
+
+    let folderContainer = this.root.querySelector('.folderNavigatorContainer') as HTMLElement;
+    folderContainer.innerText = "";
+    // let folderResultsContainer = this.element.querySelector('.folderResultsContainer') as HTMLElement;
+    // folderResultsContainer.innerText = "";
+
+    let hierFacet = _.find(args.results.facets, (item) => {
+      return item.field == this.cleanedFacetField
+    });
+
+    let folders: any;
+    if (this.currentFolderLevel == 1) {
+      folders = hierFacet.values;
+    } else if (this.currentFolderLevel == 2) {
+      folders = hierFacet.values[0].children;
+    } else if (this.currentFolderLevel == 3) {
+      folders = hierFacet.values[0].children[0].children;
+    }
+
+    _.each(folders, (item) => {
+      this.generateFolder(item);
+    });
+
+  }
+
+  public generateFolder(x: any) {
     const folder = $$('div', { className: 'folder' });
     const caption = $$('div', { className: 'folderCaption' }, x.value);
     const icon = $$('span', { className: 'folderIcon' }, openFolderIcon);
@@ -159,29 +240,24 @@ debugger
     folder.append(icon.el);
     folder.append(caption.el);
 
-    // $$(folder).on('click', () => {
-    //   this.usingFolderView = true;
-    //   this.updateFolderViewIndicator();
+    $$(folder).on('click', () => {
+      let DynamicFacet = Coveo.get(document.querySelector('#dtdam_parentfolder_facet'), DynamicHierarchicalFacet);
+      DynamicFacet['selectPath'](x.path);
+      this.queryController.executeQuery();
 
-    //   this.currentFolderLevel++;
-
-    //   this.navigateInsideFolder(item.value);
-
-    //   console.log('Navigating');
-    // });
-
-    let container = this.root.querySelector('.folderNavigatorContainer') as HTMLElement;
-
-    container.append(folder.el);
+      console.log('Navigating');
+    });
+    let folderContainer = this.root.querySelector('.folderNavigatorContainer') as HTMLElement;
+    folderContainer.append(folder.el);
   }
 
   public generateFolders() {
 
-    let endpoint = Coveo.SearchEndpoint.endpoints['default'];
+    let endpoint = SearchEndpoint.endpoints['default'];
     debugger
-    endpoint.search(this.generateFolderQuery(this.currentFolderPath)).then((results) => {
+    endpoint.search(this.generateFolderQuery()).then((results) => {
       let folders = _.find(results.facets, (item) => {
-        return item.field == this.cleanedField
+        return item.field == this.cleanedFacetField
       }).values;
 
       _.each(folders, (folder) => {
@@ -192,7 +268,7 @@ debugger
   }
 
   public navigateInsideFolder(currentFolderPath) {
-    let endpoint = Coveo.SearchEndpoint.endpoints['default'];
+    let endpoint = SearchEndpoint.endpoints['default'];
     debugger
     endpoint.search(this.generateFolderResultsQuery(currentFolderPath)).then((results) => {
       debugger
@@ -237,16 +313,17 @@ debugger
     });
   }
 
-  private generateFolderQuery(currentFolder) {
-    if (currentFolder.length > 0) {
+  private generateFolderQuery() {
+    debugger
+    if (this.currentFolderPath.length > 0) {
       return {
         numberOfResults: 1000,
-        q: "@uri",
-        aq: '@dtdam_parentfolder_facet="' + currentFolder.join('|') + '" @dtdam_item_level==' + this.currentFolderLevel,
+        q: "",
+        aq: '@dtdam_parentfolder_facet="' + this.currentFolderPath.join('|') + '"',
         //   sort: Coveo.state(document.getElementById('search'), 'sort'),
         searchHub: this.root['CoveoSearchInterface'].analyticsOptions.searchHub,
         facets: [{
-          "field": this.cleanedField,
+          "field": this.cleanedFacetField,
           "facetId": "FolderNavigatorFacetRequest",
           "type": <any>"hierarchical",
           "mlDebugTitle": "string",
@@ -269,11 +346,11 @@ debugger
     } else {
       return {
         numberOfResults: 1000,
-        q: "@uri",
+        q: "",
         aq: '@dtdam_parentfolder_facet',
         searchHub: this.root['CoveoSearchInterface'].analyticsOptions.searchHub,
         facets: [{
-          "field": this.cleanedField,
+          "field": this.cleanedFacetField,
           "facetId": "FolderNavigatorFacetRequest",
           "type": <any>"hierarchical",
           "mlDebugTitle": "string",

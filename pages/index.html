@@ -54,7 +54,7 @@
 <body>
   <div id="search" class="CoveoSearchInterface" data-enable-history="true">
     <div class="CoveoAnalytics" data-search-hub="dtdam-prod-dam-coveo-integration"></div>
-    <div class="CoveoFolderNavigator" data-facet-field="@dtdam_parentfolder_facet"></div>
+    <div class="CoveoFolderNavigator" data-facet-field="@dtdam_parentfolder_facet" data-item-level-field="@dtdam_item_level"></div>
 
     <div class="coveo-tab-section">
       <a class="CoveoTab" data-id="All" data-caption="All"></a>
@@ -77,14 +77,15 @@
     </div>
     <div class="coveo-main-section">
       <div class="coveo-facet-column">
-        <!-- <div class="CoveoCategoryFacet" data-tab="All" data-title="Folders" data-field="@dtdam_parentfolder_facet"
+        
+        <!-- <div class="CoveoCategoryFacet" data-id="test" data-tab="All" data-title="Folders" data-field="@dtdam_parentfolder_facet"
           data-enable-facet-search="false" data-is-multi-value-field="true" data-number-of-values="24"
           data-enable-settings="false"></div> -->
 
 
         <div class="CoveoDynamicHierarchicalFacet" data-title="Folders" data-field="@dtdam_parentfolder_facet"
           data-enable-facet-search="false" data-is-multi-value-field="true" data-number-of-values="18"
-          data-enable-collapse='true' data-collapsed-by-default='true' data-sort-criteria='alphanumeric'
+          data-enable-collapse='true' data-collapsed-by-default='false' data-sort-criteria='alphanumeric'
           data-tab="All,Icons,LifeStyle,Products" id="dtdam_parentfolder_facet">
         </div>
         <!-- Asset Creator Organization -->
@@ -406,7 +407,7 @@
                           class="asset-download-filename">
                         <input type="hidden" name="paths" value='<%=raw.clickableuri%>/jcr:content/renditions/original'
                           class="asset-download-path">
-                        <span class="CoveoDownload"  data-asset-imageDownload="<%=raw.clickableuri%>"></span>
+                        <span class="CoveoDownload anotehrClass"  data-asset-imageDownload="<%=raw.clickableuri%>"></span>
                         <button class="ui link button card-download-button-spinner disabled hidden">
                           <div class="ui active loader"></div>
                         </button>
@@ -430,6 +431,7 @@
                     </ul>
                   </div>
                 </div>
+                <div class="CoveoFieldValue" data-field="@dtdam_item_level"></div>
               </div>
             </script>
         </div>
