@@ -1,3 +1,44 @@
 .CoveoFolderViewSearch {
-    // Styles here
+    .folderViewIndicator {
+        display: flex;
+
+        &.usingFolderView .folderViewIndicatorIcon svg{
+            fill: #3b9835;
+        }
+
+        .folderViewIndicatorIcon {
+            width: 30px;
+            margin: 5px;
+
+            svg{
+                fill : #000000;
+            }
+        }
+        .folderViewIndicatorCaption{
+            margin: 8px 5px;
+        }        
+    }
+
+}
+
+.folderNavigatorContainer {
+    .folder {
+        display: inline-flex;
+        width: 200px;
+        height: 60px;
+        border: #000000 2px solid;
+        margin: 2px;
+        border-radius: 7px;
+        cursor: pointer;
+
+        .folderCaption{
+            margin: 8px 5px;
+            word-break: break-all;
+        }
+
+        .folderIcon {
+            width: 30px;
+            margin: 5px;
+        }
+    }
 }
