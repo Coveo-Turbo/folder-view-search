@@ -93,19 +93,31 @@ export class FolderViewSearch extends Component {
 
     //Here, we should handle the noResult message coming from the CoveoQuerySummary if need be
     private hideNoResults(){
-        let noResultdiv = this.root.querySelector('.coveo-show-if-no-results') as HTMLElement;
-        if(noResultdiv){
-            noResultdiv.hidden = true;
-            noResultdiv.classList.add("folderViewHide");
+        let noResultdiv = this.root.querySelectorAll('.coveo-show-if-no-results');
+        let facetColm = this.root.querySelector('.coveo-facet-column') as HTMLElement;
+        let fixedhead = this.root.querySelector('#fixedhead') as HTMLElement;
+        _.each(noResultdiv,(item : HTMLElement) => {
+            item.hidden = true;
+            item.classList.add("folderViewHide");
+        });
+        if(facetColm){
+            facetColm.classList.remove("coveo-no-results");
+        }
+        if(fixedhead){
+            fixedhead.classList.add("folderViewHide");
         }
     }
 
     //Here, we should handle the noResult message coming from the CoveoQuerySummary if need be
     private showNoResults(){
-        let noResultdiv = this.root.querySelector('.coveo-show-if-no-results') as HTMLElement;
-        if(noResultdiv){
-            noResultdiv.hidden = false;
-            noResultdiv.classList.remove("folderViewHide");
+        let noResultdiv = this.root.querySelectorAll('.coveo-show-if-no-results');
+        let fixedhead = this.root.querySelector('#fixedhead') as HTMLElement;
+        _.each(noResultdiv,(item : HTMLElement) => {
+            item.hidden = false;
+            item.classList.remove("folderViewHide");
+        });
+        if(fixedhead){
+            fixedhead.classList.remove("folderViewHide");
         }
     }
 
@@ -114,12 +126,9 @@ export class FolderViewSearch extends Component {
             this.createFolderStructure();
             this.createFolders(args);
 
-
             args.results.results = _.filter(args.results.results, (item) => {
                 return item.raw.dtdam_item_level == this.currentFolderLevel;
             });
-
-
 
         } else {
             this.removeFolderStructure();
