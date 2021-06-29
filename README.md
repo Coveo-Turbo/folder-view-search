@@ -48,6 +48,22 @@ Place the component in your markup:
 <div class="CoveoFolderViewSearch"></div>
 ```
 
+## Component Options
+Component has 3 options :
+
+```javascript
+    facetField: string; // should be a multivalue field used by a category facet 
+    itemLevelField: string; // should be a field which indicates on which level each items are
+    useToggleButton?: boolean; // indicate whether the folder view is driven by a toggle switch or by the state of the page 
+```
+
+Here's an example of how the component could be configured
+
+```html
+<div class="CoveoFolderViewSearch" data-use-toggle-button="true" data-facet-field="@categoryfacetfield" data-item-level-field="@itemlevel"></div>
+```
+
+
 ## Extending
 
 Extending the component can be done as follows:

@@ -17,11 +17,12 @@ import { lazyComponent } from '@coveops/turbo-core';
 export interface IFolderViewSearchOptions {
     facetField: string;
     itemLevelField: string;
+    useToggleButton?: boolean;
 }
 
 declare const require: (svgPath: string) => string;
 const openFolderIcon = require('./openFolder.svg');
-const indicatorIcon = require('./openFolder.svg');
+const toggleIcon = require('./toggle.svg');
 
 @lazyComponent
 export class FolderViewSearch extends Component {
@@ -29,6 +30,7 @@ export class FolderViewSearch extends Component {
     static options: IFolderViewSearchOptions = {
         facetField: ComponentOptions.buildStringOption(),
         itemLevelField: ComponentOptions.buildStringOption(),
+        useToggleButton: ComponentOptions.buildBooleanOption({ defaultValue: true }),
     };
 
     private cleanedFacetField: string;
@@ -45,20 +47,20 @@ export class FolderViewSearch extends Component {
 
         this.cleanedFacetField = this.options.facetField.replace('@', '');
         this.cleaneItemLevelField = this.options.facetField.replace('@', '');
-        this.usingFolderView = false;
+        this.usingFolderView = true;
 
         this.bind.onRootElement(QueryEvents.buildingQuery, this.handleBuildingQuery);
         this.bind.onRootElement(QueryEvents.doneBuildingQuery, this.handleDoneBuildingQuery);
         this.bind.onRootElement(QueryEvents.deferredQuerySuccess, this.handleDeferredQuerySuccess);
         this.bind.onRootElement(QueryEvents.preprocessResults, this.handlePreprocessResults);
 
-        this.buildFolderViewIndicator();
+        this.buildToggleButton();
     }
 
     public handleDeferredQuerySuccess(args: IQuerySuccessEventArgs) {
         if (this.usingFolderView) {
             this.hideNoResults();
-        }else{
+        } else {
             this.showNoResults();
         }
     }
@@ -73,50 +75,49 @@ export class FolderViewSearch extends Component {
     public handleBuildingQuery(args: IBuildingQueryEventArgs) {
         let state = Coveo.state(this.root);
 
+        if (!this.options.useToggleButton) {
+            this.isStateVanilla(state);
+        }
+
         this.currentFolderLevel = 1;
         if (state.attributes["f:" + this.options.facetField]) {
             this.currentFolderLevel += state.attributes["f:" + this.options.facetField].length
         }
 
-        if (this.isStateVanilla(state)) {
-            this.usingFolderView = true;
+        if (this.usingFolderView) {
             args.queryBuilder.addContextValue('vanillaState', true);
-
         } else {
-            this.usingFolderView = false;
             args.queryBuilder.addContextValue('vanillaState', false);
-
         }
 
-        this.updateFolderViewIndicator();
     }
 
     //Here, we should handle the noResult message coming from the CoveoQuerySummary if need be
-    private hideNoResults(){
+    private hideNoResults() {
         let noResultdiv = this.root.querySelectorAll('.coveo-show-if-no-results');
         let facetColm = this.root.querySelector('.coveo-facet-column') as HTMLElement;
         let fixedhead = this.root.querySelector('#fixedhead') as HTMLElement;
-        _.each(noResultdiv,(item : HTMLElement) => {
+        _.each(noResultdiv, (item: HTMLElement) => {
             item.hidden = true;
             item.classList.add("folderViewHide");
         });
-        if(facetColm){
+        if (facetColm) {
             facetColm.classList.remove("coveo-no-results");
         }
-        if(fixedhead){
+        if (fixedhead) {
             fixedhead.classList.add("folderViewHide");
         }
     }
 
     //Here, we should handle the noResult message coming from the CoveoQuerySummary if need be
-    private showNoResults(){
+    private showNoResults() {
         let noResultdiv = this.root.querySelectorAll('.coveo-show-if-no-results');
         let fixedhead = this.root.querySelector('#fixedhead') as HTMLElement;
-        _.each(noResultdiv,(item : HTMLElement) => {
+        _.each(noResultdiv, (item: HTMLElement) => {
             item.hidden = false;
             item.classList.remove("folderViewHide");
         });
-        if(fixedhead){
+        if (fixedhead) {
             fixedhead.classList.remove("folderViewHide");
         }
     }
@@ -133,40 +134,62 @@ export class FolderViewSearch extends Component {
         } else {
             this.removeFolderStructure();
         }
-
-        // let folderContainer = this.element.querySelector('.folderContainer') as HTMLElement;
-        // folderContainer.innerText = "";
-        // let folderResultsContainer = this.element.querySelector('.folderResultsContainer') as HTMLElement;
-        // folderResultsContainer.innerText = "";
-
-        // let folders = _.find(args.results.facets, (item) => {
-        //   return item.field == this.cleanedFacetField
-        // }).values;
-
-        // _.each(folders, (item) => {
-        //   this.generateFolder(item);
-        // });
-
     }
 
-    private buildFolderViewIndicator() {
-        const folderViewIndicator = $$('div', { className: 'folderViewIndicator' });
-        const folderViewIndicatorIcon = $$('div', { className: 'folderViewIndicatorIcon' }, indicatorIcon);
-        const folderViewIndicatorCaption = $$('div', { className: 'folderViewIndicatorCaption' }, 'Using folder view');
-
-        folderViewIndicator.append(folderViewIndicatorIcon.el);
-        folderViewIndicator.append(folderViewIndicatorCaption.el);
-        this.element.append(folderViewIndicator.el);
-    }
-
-    public updateFolderViewIndicator() {
-        let indicator = this.element.querySelector('.folderViewIndicator') as HTMLElement;
-
-        if (this.usingFolderView) {
-            indicator.classList.add('usingFolderView');
+    private buildToggleButton() {
+        const toggleButton = $$('div', { className: 'toggleButton' });
+        const iLabel = $$('label', { className: 'cf', for: 'checkbox1' });
+        let toggleInput;
+        if (this.options.useToggleButton) {
+            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', checked: true });
         } else {
-            indicator.classList.remove('usingFolderView');
+            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', checked: true, disabled: true });
         }
+        const iIndicator = $$('i', { className: 'indicator' }, toggleIcon);
+        const labelActive = $$('span', { className: 'folderViewIndicatorIcon' }, "Using <br/> folder view");
+        const labelInactive = $$('span', { className: 'folderViewIndicatorIcon' }, "Using <br/> search");
+
+
+        iLabel.append(toggleInput.el);
+        iLabel.append(labelActive.el);
+        iLabel.append(iIndicator.el);
+        iLabel.append(labelInactive.el);
+        toggleButton.append(iLabel.el);
+
+        if (this.options.useToggleButton) {
+            $$(toggleButton).on('click', () => {
+                let checkbox = toggleButton.findId('checkbox1') as HTMLInputElement;
+                if (checkbox.checked) {
+                    checkbox.checked = false;
+                    this.usingFolderView = false;
+                    this.queryController.deferExecuteQuery({
+                        beforeExecuteQuery: () => {
+                            Coveo.logCustomEvent(this.root, analyticsActionCauseList.facetSelect, {
+                                folderViewSearch: 'false'
+                            });
+                            Coveo.logSearchEvent(this.root, analyticsActionCauseList.facetSelect, {
+                                folderViewSearch: 'false'
+                            });
+                        }
+                    });
+                } else {
+                    checkbox.checked = true;
+                    this.usingFolderView = true;
+                    this.queryController.deferExecuteQuery({
+                        beforeExecuteQuery: () => {
+                            Coveo.logCustomEvent(this.root, analyticsActionCauseList.triggerQuery, {
+                                folderViewSearch: 'true'
+                            });
+                            Coveo.logSearchEvent(this.root, analyticsActionCauseList.triggerQuery, {
+                                folderViewSearch: 'true'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        this.element.append(toggleButton.el);
     }
 
     private createFolderStructure() {
@@ -211,7 +234,15 @@ export class FolderViewSearch extends Component {
             }
         );
 
-        return isVanilla;
+        let checkboxEl = this.element.querySelector('#checkbox1') as HTMLInputElement;
+
+        if (isVanilla) {
+            this.usingFolderView = true;
+            checkboxEl.checked = true;
+        } else {
+            this.usingFolderView = false;
+            checkboxEl.checked = false;
+        }
     }
 
     public createFolders(args: IQuerySuccessEventArgs) {
@@ -239,7 +270,7 @@ export class FolderViewSearch extends Component {
     // Recursive method which dives down into the folder structure and returns the folders
     private getFolderchildren(item: any) {
         if (item.state == "selected") {
-            return item.children ;
+            return item.children;
         } else {
             return this.getFolderchildren(item.children[0]);
         }
@@ -273,138 +304,4 @@ export class FolderViewSearch extends Component {
         let folderContainer = this.root.querySelector('.folderNavigatorContainer') as HTMLElement;
         folderContainer.append(folder.el);
     }
-
-    // public generateFolders() {
-
-    //     let endpoint = SearchEndpoint.endpoints['default'];
-    //     
-    //     endpoint.search(this.generateFolderQuery()).then((results) => {
-    //         let folders = _.find(results.facets, (item) => {
-    //             return item.field == this.cleanedFacetField
-    //         }).values;
-
-    //         _.each(folders, (folder) => {
-    //             this.generateFolder(folder);
-    //         });
-    //     });
-
-    // }
-
-    // public navigateInsideFolder(currentFolderPath) {
-    //     let endpoint = SearchEndpoint.endpoints['default'];
-    //     
-    //     endpoint.search(this.generateFolderResultsQuery(currentFolderPath)).then((results) => {
-    //         
-    //         //   MaximCusto.sendCustomSearchEvent(results);
-    //         let folderResultsContainer = this.element.querySelector('.folderResultsContainer') as HTMLElement;
-    //         if (results.totalCount > 0) {
-    //             
-
-    //             // folderResultsContainer.style.display = 'block';
-
-    //             // Products label
-    //             let banner = `
-    //         <div class="coveo-result-row" style="vertical-align:top;width: 100px;padding-bottom: 10px;margin-top: -1px;">
-    //           <span class="maxim-icon parts-section">${Coveo.l('Products')}</span>
-    //         </div>`;
-    //             let bannerEl = Coveo.$$('div');
-    //             bannerEl.setHtml(banner);
-    //             folderResultsContainer.appendChild(bannerEl.el);
-
-    //             let r: Coveo.Dom, compiled;
-    //             let template = DefaultResultTemplate.instantiateToString();
-
-    //             _.forEach(results.results, function (result) {
-    //                 r = Coveo.$$('div', { class: "CoveoResult" });
-
-    //                 compiled = _.template(DefaultResultTemplate.formatTemplate(template, result), {
-    //                     interpolate: /\{\{(.+?)\}\}/g
-    //                 });
-
-    //                 r.setHtml(compiled(result));
-
-    //                 //   MaximCusto.bindClickEventsOnLinks(r, result);
-
-    //                 folderResultsContainer.appendChild(r.el);
-    //             });
-
-
-    //         } else {
-    //             const folderContainer = $$('div', { className: 'folderContainer' }, 'Empty folder');
-    //             folderResultsContainer.append(folderContainer.el);
-    //         }
-    //     });
-    // }
-
-    // private generateFolderQuery() {
-    //     
-    //     if (this.currentFolderPath.length > 0) {
-    //         return {
-    //             numberOfResults: 1000,
-    //             q: "",
-    //             aq: '@dtdam_parentfolder_facet="' + this.currentFolderPath.join('|') + '"',
-    //             //   sort: Coveo.state(document.getElementById('search'), 'sort'),
-    //             searchHub: this.root['CoveoSearchInterface'].analyticsOptions.searchHub,
-    //             facets: [{
-    //                 "field": this.cleanedFacetField,
-    //                 "facetId": "FolderNavigatorFacetRequest",
-    //                 "type": <any>"hierarchical",
-    //                 "mlDebugTitle": "string",
-    //                 "basePath": [],
-    //                 "filterByBasePath": false,
-    //                 "sortCriteria": <any>"alphanumeric",
-    //                 "numberOfValues": 1000,
-    //                 "injectionDepth": 1000,
-    //                 "freezeCurrentValues": false,
-    //                 "currentValues": [],
-    //                 "isFieldExpanded": false,
-    //                 "generateAutomaticRanges": false,
-    //                 "rangeAlgorithm": "even",
-    //                 "filterFacetCount": true,
-    //                 "delimitingCharacter": "|",
-    //                 "preventAutoSelect": false
-    //             }],
-    //             debug: true
-    //         }
-    //     } else {
-    //         return {
-    //             numberOfResults: 1000,
-    //             q: "",
-    //             aq: '@dtdam_parentfolder_facet',
-    //             searchHub: this.root['CoveoSearchInterface'].analyticsOptions.searchHub,
-    //             facets: [{
-    //                 "field": this.cleanedFacetField,
-    //                 "facetId": "FolderNavigatorFacetRequest",
-    //                 "type": <any>"hierarchical",
-    //                 "mlDebugTitle": "string",
-    //                 "basePath": [],
-    //                 "filterByBasePath": false,
-    //                 "sortCriteria": <any>"alphanumeric",
-    //                 "numberOfValues": 1000,
-    //                 "injectionDepth": 1000,
-    //                 "freezeCurrentValues": false,
-    //                 "currentValues": [],
-    //                 "isFieldExpanded": false,
-    //                 "generateAutomaticRanges": false,
-    //                 "rangeAlgorithm": "even",
-    //                 "filterFacetCount": true,
-    //                 "delimitingCharacter": "|",
-    //                 "preventAutoSelect": false
-    //             }],
-    //             debug: true
-    //         }
-    //     }
-    // }
-
-    // private generateFolderResultsQuery(currentFolder) {
-    //     
-    //     return {
-    //         numberOfResults: 1000,
-    //         q: "@uri",
-    //         aq: (currentFolder.length > 0 ? ('@dtdam_parentfolder_facet="' + currentFolder.join('|') + '" ') : '') + '@dtdam_item_level==' + this.currentFolderLevel,
-    //         //   sort: Coveo.state(document.getElementById('search'), 'sort'),
-    //         searchHub: this.root['CoveoSearchInterface'].analyticsOptions.searchHub,
-    //         debug: true
-    //     }
-    // }
 }
