@@ -18,6 +18,7 @@ export interface IFolderViewSearchOptions {
     facetField: string;
     itemLevelField: string;
     useToggleButton?: boolean;
+    useFolderViewByDefault?: boolean;
 }
 
 declare const require: (svgPath: string) => string;
@@ -31,6 +32,7 @@ export class FolderViewSearch extends Component {
         facetField: ComponentOptions.buildStringOption(),
         itemLevelField: ComponentOptions.buildStringOption(),
         useToggleButton: ComponentOptions.buildBooleanOption({ defaultValue: true }),
+        useFolderViewByDefault: ComponentOptions.buildBooleanOption({ defaultValue: true }),
     };
 
     private cleanedFacetField: string;
@@ -47,7 +49,8 @@ export class FolderViewSearch extends Component {
 
         this.cleanedFacetField = this.options.facetField.replace('@', '');
         this.cleaneItemLevelField = this.options.facetField.replace('@', '');
-        this.usingFolderView = true;
+
+        this.usingFolderView = this.options.useFolderViewByDefault;
 
         this.bind.onRootElement(QueryEvents.buildingQuery, this.handleBuildingQuery);
         this.bind.onRootElement(QueryEvents.doneBuildingQuery, this.handleDoneBuildingQuery);
@@ -141,15 +144,16 @@ export class FolderViewSearch extends Component {
         const iLabel = $$('label', { className: 'cf', for: 'checkbox1' });
         let toggleInput;
         if (this.options.useToggleButton) {
-            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', checked: true });
+            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', cul:"oui"});
         } else {
-            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', checked: true, disabled: true });
+            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', disabled: true });
         }
+        toggleInput.el.checked = this.usingFolderView;
         const iIndicator = $$('i', { className: 'indicator' }, toggleIcon);
         const labelActive = $$('span', { className: 'folderViewIndicatorIcon' }, "Using <br/> folder view");
         const labelInactive = $$('span', { className: 'folderViewIndicatorIcon' }, "Using <br/> search");
 
-
+        
         iLabel.append(toggleInput.el);
         iLabel.append(labelActive.el);
         iLabel.append(iIndicator.el);
@@ -159,6 +163,7 @@ export class FolderViewSearch extends Component {
         if (this.options.useToggleButton) {
             $$(toggleButton).on('click', () => {
                 let checkbox = toggleButton.findId('checkbox1') as HTMLInputElement;
+                
                 if (checkbox.checked) {
                     checkbox.checked = false;
                     this.usingFolderView = false;

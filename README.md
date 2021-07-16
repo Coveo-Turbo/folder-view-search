@@ -54,7 +54,8 @@ Component has 3 options :
 ```javascript
     facetField: string; // should be a multivalue field used by a category facet 
     itemLevelField: string; // should be a field which indicates on which level each items are
-    useToggleButton?: boolean; // indicate whether the folder view is driven by a toggle switch or by the state of the page 
+    useToggleButton?: boolean; // indicate whether the folder view is driven by a toggle switch or by the state of the page
+    useFolderViewByDefault?: boolean; // indicate whether the folder view is turned on by default on load
 ```
 
 Here's an example of how the component could be configured
