@@ -39,6 +39,8 @@ export class FolderViewSearch extends Component {
     private cleaneItemLevelField: string;
 
     public usingFolderView: boolean;
+    // private firstQuery: boolean;
+    // private manualAction: boolean;
     public currentFolderLevel: number;
     public currentFolderPath: string[];
     public generatedHierchichalFacet: DynamicHierarchicalFacet;
@@ -51,6 +53,9 @@ export class FolderViewSearch extends Component {
         this.cleaneItemLevelField = this.options.facetField.replace('@', '');
 
         this.usingFolderView = this.options.useFolderViewByDefault;
+
+        // this.firstQuery = true;
+        // this.manualAction = false;
 
         this.bind.onRootElement(QueryEvents.buildingQuery, this.handleBuildingQuery);
         this.bind.onRootElement(QueryEvents.doneBuildingQuery, this.handleDoneBuildingQuery);
@@ -78,9 +83,13 @@ export class FolderViewSearch extends Component {
     public handleBuildingQuery(args: IBuildingQueryEventArgs) {
         let state = Coveo.state(this.root);
 
-        if (!this.options.useToggleButton) {
-            this.isStateVanilla(state);
-        }
+        // if (!this.options.useToggleButton) {
+            // if (this.firstQuery){
+                // this.firstQuery = false;
+            // }else{
+                this.isStateVanilla(state);
+            // }
+        // }
 
         this.currentFolderLevel = 1;
         if (state.attributes["f:" + this.options.facetField]) {
@@ -144,7 +153,7 @@ export class FolderViewSearch extends Component {
         const iLabel = $$('label', { className: 'cf', for: 'checkbox1' });
         let toggleInput;
         if (this.options.useToggleButton) {
-            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', cul:"oui"});
+            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1'});
         } else {
             toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', disabled: true });
         }
@@ -160,7 +169,7 @@ export class FolderViewSearch extends Component {
         iLabel.append(labelInactive.el);
         toggleButton.append(iLabel.el);
 
-        if (this.options.useToggleButton) {
+        // if (this.options.useToggleButton) {
             $$(toggleButton).on('click', () => {
                 let checkbox = toggleButton.findId('checkbox1') as HTMLInputElement;
                 
@@ -191,8 +200,9 @@ export class FolderViewSearch extends Component {
                         }
                     });
                 }
+                // this.manualAction = true;
             });
-        }
+        // }
 
         this.element.append(toggleButton.el);
     }
@@ -221,6 +231,8 @@ export class FolderViewSearch extends Component {
     private isStateVanilla(state: QueryStateModel) {
         let isVanilla = true;
 
+        
+
         // If there's a query, don't show folderview
         if (state.attributes.q != "") {
             isVanilla = false
@@ -241,10 +253,7 @@ export class FolderViewSearch extends Component {
 
         let checkboxEl = this.element.querySelector('#checkbox1') as HTMLInputElement;
 
-        if (isVanilla) {
-            this.usingFolderView = true;
-            checkboxEl.checked = true;
-        } else {
+        if (!isVanilla) {
             this.usingFolderView = false;
             checkboxEl.checked = false;
         }
