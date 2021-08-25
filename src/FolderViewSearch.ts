@@ -22,8 +22,8 @@ export interface IFolderViewSearchOptions {
 }
 
 declare const require: (svgPath: string) => string;
-const openFolderIcon = require('./openFolder.svg');
-const toggleIcon = require('./toggle.svg');
+const folderIcon = require('./Icons/folder.svg');
+const magnifierIcon = require('./Icons/magnifier.svg');
 
 @lazyComponent
 export class FolderViewSearch extends Component {
@@ -39,8 +39,6 @@ export class FolderViewSearch extends Component {
     private cleaneItemLevelField: string;
 
     public usingFolderView: boolean;
-    // private firstQuery: boolean;
-    // private manualAction: boolean;
     public currentFolderLevel: number;
     public currentFolderPath: string[];
     public generatedHierchichalFacet: DynamicHierarchicalFacet;
@@ -53,9 +51,6 @@ export class FolderViewSearch extends Component {
         this.cleaneItemLevelField = this.options.facetField.replace('@', '');
 
         this.usingFolderView = this.options.useFolderViewByDefault;
-
-        // this.firstQuery = true;
-        // this.manualAction = false;
 
         this.bind.onRootElement(QueryEvents.buildingQuery, this.handleBuildingQuery);
         this.bind.onRootElement(QueryEvents.doneBuildingQuery, this.handleDoneBuildingQuery);
@@ -83,13 +78,7 @@ export class FolderViewSearch extends Component {
     public handleBuildingQuery(args: IBuildingQueryEventArgs) {
         let state = Coveo.state(this.root);
 
-        // if (!this.options.useToggleButton) {
-            // if (this.firstQuery){
-                // this.firstQuery = false;
-            // }else{
-                this.isStateVanilla(state);
-            // }
-        // }
+        this.isStateVanilla(state);
 
         this.currentFolderLevel = 1;
         if (state.attributes["f:" + this.options.facetField]) {
@@ -149,62 +138,76 @@ export class FolderViewSearch extends Component {
     }
 
     private buildToggleButton() {
-        const toggleButton = $$('div', { className: 'toggleButton' });
-        const iLabel = $$('label', { className: 'cf', for: 'checkbox1' });
-        let toggleInput;
-        if (this.options.useToggleButton) {
-            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1'});
-        } else {
-            toggleInput = $$('input', { type: 'checkbox', id: 'checkbox1', disabled: true });
-        }
-        toggleInput.el.checked = this.usingFolderView;
-        const iIndicator = $$('i', { className: 'indicator' }, toggleIcon);
-        const labelActive = $$('span', { className: 'folderViewIndicatorIcon' }, "Using <br/> folder view");
-        const labelInactive = $$('span', { className: 'folderViewIndicatorIcon' }, "Using <br/> search");
 
-        
-        iLabel.append(toggleInput.el);
-        iLabel.append(labelActive.el);
-        iLabel.append(iIndicator.el);
-        iLabel.append(labelInactive.el);
-        toggleButton.append(iLabel.el);
+        const toggleButton = (this.usingFolderView) ? $$('div', { className: 'toggleButton folderViewActive' }) : $$('div', { className: 'toggleButton searchViewActive' });
+        const toggleButtonSearchContainer = $$('div', { className: 'toggleButtonSearchContainer' });
+        const toggleButtonFolderContainer = $$('div', { className: 'toggleButtonFolderContainer' });
+        const toggleButtonSearchLabel = $$('div', { className: 'toggleButtonSearchLabel' }, "Using <br/> Search View");
+        const toggleButtonFolderLabel = $$('div', { className: 'toggleButtonFolderLabel' }, "Using <br/> Folder View");
+        const toggleButtonSearchIcon = $$('div', { className: 'toggleButtonSearchIcon' }, magnifierIcon);
+        const toggleButtonFolderIcon = $$('div', { className: 'toggleButtonFolderIcon' }, folderIcon);
 
-        // if (this.options.useToggleButton) {
-            $$(toggleButton).on('click', () => {
-                let checkbox = toggleButton.findId('checkbox1') as HTMLInputElement;
-                
-                if (checkbox.checked) {
-                    checkbox.checked = false;
-                    this.usingFolderView = false;
-                    this.queryController.deferExecuteQuery({
-                        beforeExecuteQuery: () => {
-                            Coveo.logCustomEvent(this.root, analyticsActionCauseList.facetSelect, {
-                                folderViewSearch: 'false'
-                            });
-                            Coveo.logSearchEvent(this.root, analyticsActionCauseList.facetSelect, {
-                                folderViewSearch: 'false'
-                            });
-                        }
-                    });
-                } else {
-                    checkbox.checked = true;
-                    this.usingFolderView = true;
-                    this.queryController.deferExecuteQuery({
-                        beforeExecuteQuery: () => {
-                            Coveo.logCustomEvent(this.root, analyticsActionCauseList.triggerQuery, {
-                                folderViewSearch: 'true'
-                            });
-                            Coveo.logSearchEvent(this.root, analyticsActionCauseList.triggerQuery, {
-                                folderViewSearch: 'true'
-                            });
-                        }
-                    });
+        toggleButtonSearchContainer.append(toggleButtonSearchIcon.el)
+        toggleButtonSearchContainer.append(toggleButtonSearchLabel.el)
+        toggleButtonFolderContainer.append(toggleButtonFolderLabel.el)
+        toggleButtonFolderContainer.append(toggleButtonFolderIcon.el)
+
+        toggleButton.append(toggleButtonSearchContainer.el);
+        toggleButton.append(toggleButtonFolderContainer.el);
+
+        $$(toggleButton).on('click', () => {
+
+            // Remove the query term and the facets if the user clicks on the toggle button
+            Coveo.state(this.root, 'q', '');
+            _.each(_.filter(
+                Object.keys(Coveo.state(this.root).attributes), (item) => {
+                    return (item.toString().substr(0, 2) == "f:" && item.toString() != "f:" + this.options.facetField)
                 }
-                // this.manualAction = true;
+            ), (facet) => {
+                if (Coveo.state(this.root).attributes[facet].length > 0) {
+                    console.log(facet)
+                    Coveo.state(this.root, facet, []);
+                }
             });
-        // }
+
+            if (this.usingFolderView) {
+
+                toggleButton.addClass('searchViewActive');
+                toggleButton.removeClass('folderViewActive');
+                this.usingFolderView = false;
+
+                this.queryController.deferExecuteQuery({
+                    beforeExecuteQuery: () => {
+                        Coveo.logCustomEvent(this.root, analyticsActionCauseList.facetSelect, {
+                            folderViewSearch: 'false'
+                        });
+                        Coveo.logSearchEvent(this.root, analyticsActionCauseList.facetSelect, {
+                            folderViewSearch: 'false'
+                        });
+                    }
+                });
+            } else {
+
+                toggleButton.removeClass('searchViewActive');
+                toggleButton.addClass('folderViewActive');
+                this.usingFolderView = true;
+
+                this.queryController.deferExecuteQuery({
+                    beforeExecuteQuery: () => {
+                        Coveo.logCustomEvent(this.root, analyticsActionCauseList.triggerQuery, {
+                            folderViewSearch: 'true'
+                        });
+                        Coveo.logSearchEvent(this.root, analyticsActionCauseList.triggerQuery, {
+                            folderViewSearch: 'true'
+                        });
+                    }
+                });
+            }
+
+        });
 
         this.element.append(toggleButton.el);
+
     }
 
     private createFolderStructure() {
@@ -231,7 +234,7 @@ export class FolderViewSearch extends Component {
     private isStateVanilla(state: QueryStateModel) {
         let isVanilla = true;
 
-        
+
 
         // If there's a query, don't show folderview
         if (state.attributes.q != "") {
@@ -251,11 +254,10 @@ export class FolderViewSearch extends Component {
             }
         );
 
-        let checkboxEl = this.element.querySelector('#checkbox1') as HTMLInputElement;
-
         if (!isVanilla) {
+            this.element.firstElementChild.classList.add('searchViewActive');
+            this.element.firstElementChild.classList.remove('folderViewActive');
             this.usingFolderView = false;
-            checkboxEl.checked = false;
         }
     }
 
@@ -293,7 +295,7 @@ export class FolderViewSearch extends Component {
     public generateFolder(x: any) {
         const folder = $$('div', { className: 'folder' });
         const caption = $$('div', { className: 'folderCaption' }, x.value);
-        const icon = $$('span', { className: 'folderIcon' }, openFolderIcon);
+        const icon = $$('span', { className: 'folderIcon' }, folderIcon);
 
         folder.append(icon.el);
         folder.append(caption.el);
